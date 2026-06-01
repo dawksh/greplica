@@ -1,7 +1,7 @@
-import type { ClaimContextDocument } from "./claim-text.js";
 import type { ScoreEntry } from "./bm25.js";
+import type { ContextDocument } from "./documents.js";
 
-export function scoreExact(query: string, documents: ClaimContextDocument[]): ScoreEntry[] {
+export function scoreExact(query: string, documents: ContextDocument[]): ScoreEntry[] {
   const normalizedQuery = normalize(query);
   if (normalizedQuery.length === 0) return [];
 
@@ -9,7 +9,7 @@ export function scoreExact(query: string, documents: ClaimContextDocument[]): Sc
   const scored = documents
     .map((document) => {
       const text = normalize(document.text);
-      const id = normalize(document.claim.id);
+      const id = normalize(document.id);
       let score = 0;
 
       if (id === normalizedQuery) score += 4;
@@ -22,7 +22,7 @@ export function scoreExact(query: string, documents: ClaimContextDocument[]): Sc
         }
       }
 
-      return { id: document.claim.id, score };
+      return { id: document.key, score };
     })
     .filter((entry) => entry.score > 0)
     .sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));

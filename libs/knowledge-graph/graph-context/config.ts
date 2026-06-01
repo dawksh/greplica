@@ -1,5 +1,5 @@
 export const graphContextConfig = {
-  version: "claim-context-v1",
+  version: "graph-context-v3-graph-boost",
   embedding: {
     provider: "openai",
     model: "text-embedding-3-small",
@@ -12,12 +12,28 @@ export const graphContextConfig = {
     minimumSelectedClaims: 3,
     weights: {
       semantic: 1,
-      bm25: 0.45,
-      exact: 0.25,
+      bm25: 0.075,
+      exact: 0,
     },
     bm25: {
       k1: 1.5,
       b: 0.75,
+    },
+    claimSupport: {
+      weight: 1,
+      countBoost: 0.03,
+    },
+    directObject: {
+      weight: 0.85,
+    },
+    graphBoost: {
+      containsParentToChild: 0.85,
+      containsChildToParent: 0.85,
+      aboutClaimToObject: 0,
+      aboutObjectToClaim: 0,
+      touchesFlowToComponent: 0,
+      touchesComponentToFlow: 0,
+      maxSources: 3,
     },
   },
 } as const;

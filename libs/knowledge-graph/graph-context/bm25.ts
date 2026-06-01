@@ -1,5 +1,5 @@
 import type { GraphContextConfig } from "./config.js";
-import type { ClaimContextDocument } from "./claim-text.js";
+import type { ContextDocument } from "./documents.js";
 
 export interface ScoreEntry {
   id: string;
@@ -7,12 +7,12 @@ export interface ScoreEntry {
   rank: number;
 }
 
-export function scoreBm25(query: string, documents: ClaimContextDocument[], config: GraphContextConfig): ScoreEntry[] {
+export function scoreBm25(query: string, documents: ContextDocument[], config: GraphContextConfig): ScoreEntry[] {
   const queryTokens = tokenize(query);
   if (queryTokens.length === 0 || documents.length === 0) return [];
 
   const tokenized = documents.map((document) => ({
-    id: document.claim.id,
+    id: document.key,
     tokens: tokenize(document.text),
   }));
   const avgDocLength = tokenized.reduce((sum, document) => sum + document.tokens.length, 0) / tokenized.length || 1;

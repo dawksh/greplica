@@ -6,7 +6,14 @@
       {
         "id": "component.cli_app",
         "name": "Engineering Context CLI",
-        "code_anchor": "apps/cli/main.ts"
+        "code_anchor": "apps/cli/main.ts",
+        "contains": [
+          "component.cli_init_command",
+          "component.cli_graph_read_command",
+          "component.cli_graph_context_command",
+          "component.cli_proposal_commands",
+          "component.repo_context_detection"
+        ]
       },
       {
         "id": "component.cli_init_command",
@@ -41,7 +48,8 @@
       {
         "id": "component.proposal_model",
         "name": "Proposal model and compact syntax",
-        "code_anchor": "libs/knowledge-graph/proposal.ts"
+        "code_anchor": "libs/knowledge-graph/proposal.ts",
+        "contains": "component.proposal_normalization"
       },
       {
         "id": "component.proposal_normalization",
@@ -61,7 +69,11 @@
       {
         "id": "component.graph_schema",
         "name": "Graph schema and object types",
-        "code_anchor": "libs/knowledge-graph/schema.ts, libs/knowledge-graph/claim.ts, libs/knowledge-graph/scope.ts, libs/knowledge-graph/commit.ts"
+        "code_anchor": "libs/knowledge-graph/schema.ts, libs/knowledge-graph/claim.ts, libs/knowledge-graph/scope.ts, libs/knowledge-graph/commit.ts",
+        "contains": [
+          "component.scope_model",
+          "component.memory_commit_model"
+        ]
       },
       {
         "id": "component.scope_model",
@@ -76,7 +88,8 @@
       {
         "id": "component.sqlite_database",
         "name": "SQLite database opener and migrations",
-        "code_anchor": "libs/storage/sqlite/db.ts, libs/storage/sqlite/migrate.ts"
+        "code_anchor": "libs/storage/sqlite/db.ts, libs/storage/sqlite/migrate.ts",
+        "contains": "component.sqlite_schema"
       },
       {
         "id": "component.sqlite_schema",
@@ -86,7 +99,8 @@
       {
         "id": "component.sqlite_repository",
         "name": "SQLite repository",
-        "code_anchor": "libs/storage/sqlite/repository.ts"
+        "code_anchor": "libs/storage/sqlite/repository.ts",
+        "contains": "component.active_graph_view"
       },
       {
         "id": "component.active_graph_view",
@@ -146,6 +160,14 @@
           "component.cli_proposal_commands",
           "component.knowledge_graph_service",
           "component.repo_context_detection"
+        ],
+        "contains": [
+          "flow.repo_context_detection",
+          "flow.repo_initialization",
+          "flow.graph_read",
+          "flow.graph_context",
+          "flow.proposal_validation",
+          "flow.proposal_apply"
         ]
       },
       {
@@ -211,7 +233,8 @@
           "component.sqlite_repository",
           "component.memory_commit_model",
           "component.scope_model"
-        ]
+        ],
+        "contains": "flow.proposal_validation"
       },
       {
         "id": "flow.compact_relationships_to_edges",
@@ -251,7 +274,8 @@
           "component.sqlite_repository",
           "component.scope_model",
           "component.memory_commit_model"
-        ]
+        ],
+        "contains": "flow.active_graph_view"
       },
       {
         "id": "flow.bootstrap_eval_generation",
@@ -451,6 +475,29 @@
         "about": [
           "component.knowledge_graph_service",
           "flow.proposal_apply"
+        ]
+      },
+      {
+        "id": "claim.apply_prints_commit_scope_and_counts",
+        "kind": "fact",
+        "text": "After applying a proposal, the CLI prints the memory commit ID, scope ID, and counts for components, flows, claims, sources, and edges written by the proposal.",
+        "truth": "code_verified",
+        "intent": "intended",
+        "about": [
+          "component.cli_proposal_commands",
+          "flow.proposal_apply",
+          "component.knowledge_graph_service"
+        ]
+      },
+      {
+        "id": "claim.cli_app_contains_command_components",
+        "kind": "fact",
+        "text": "The CLI app contains command-level components for init, graph read, graph context, and proposal validate/apply behavior in apps/cli/main.ts.",
+        "truth": "code_verified",
+        "intent": "intended",
+        "about": [
+          "component.cli_app",
+          "flow.cli_command_dispatch"
         ]
       },
       {
@@ -729,6 +776,19 @@
         "intent": "intended",
         "about": [
           "component.sqlite_database",
+          "flow.local_database_isolation"
+        ]
+      },
+      {
+        "id": "claim.package_eval_scripts_invoke_isolated_eval_runners",
+        "kind": "fact",
+        "text": "Package eval scripts invoke built eval runners, and those runners set ENGINEERING_CONTEXT_HOME to run-specific ec-home directories for isolated local database state.",
+        "truth": "code_verified",
+        "intent": "intended",
+        "about": [
+          "component.package_scripts",
+          "component.bootstrap_eval_runner",
+          "component.search_eval_fixture",
           "flow.local_database_isolation"
         ]
       },

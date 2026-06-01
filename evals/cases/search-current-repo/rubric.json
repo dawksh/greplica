@@ -282,18 +282,19 @@
     },
     {
       "id": "q15_database_home",
-      "query": "I am making evals isolated and need to know how ENGINEERING_CONTEXT_HOME affects the local database path.",
+      "query": "I am making eval scripts isolate their local database and need to understand how package eval entrypoints, runners, and ENGINEERING_CONTEXT_HOME fit together.",
       "highly_relevant": [
         "flow:flow.local_database_isolation",
         "claim:claim.database_path_uses_engineering_context_home",
-        "component:component.sqlite_database"
+        "claim:claim.package_eval_scripts_invoke_isolated_eval_runners"
       ],
       "relevant": [
+        "component:component.sqlite_database",
         "component:component.bootstrap_eval_runner",
-        "component:component.search_eval_fixture"
+        "component:component.package_scripts"
       ],
       "weakly_relevant": [
-        "component:component.package_scripts"
+        "component:component.search_eval_fixture"
       ]
     },
     {
@@ -461,10 +462,11 @@
       "highly_relevant": [
         "component:component.cli_proposal_commands",
         "flow:flow.proposal_apply",
-        "claim:claim.apply_validates_before_writing"
+        "claim:claim.apply_prints_commit_scope_and_counts"
       ],
       "relevant": [
         "component:component.knowledge_graph_service",
+        "claim:claim.apply_validates_before_writing",
         "component:component.sqlite_repository",
         "component:component.memory_commit_model"
       ],
@@ -536,6 +538,84 @@
       ],
       "weakly_relevant": [
         "component:component.bootstrap_eval_runner"
+      ]
+    },
+    {
+      "id": "q31_new_edge_kind_impact",
+      "query": "I am adding a new graph edge kind and need to understand which relationship syntax, validation rules, and schema concepts could break.",
+      "highly_relevant": [
+        "component:component.edge_rules",
+        "component:component.proposal_validation",
+        "flow:flow.edge_validation"
+      ],
+      "relevant": [
+        "component:component.proposal_model",
+        "component:component.proposal_normalization",
+        "flow:flow.compact_relationships_to_edges",
+        "claim:claim.validation_checks_edge_references",
+        "component:component.graph_schema"
+      ],
+      "weakly_relevant": [
+        "claim:claim.edge_about_direction",
+        "claim:claim.edge_contains_direction",
+        "claim:claim.edge_touches_direction"
+      ]
+    },
+    {
+      "id": "q32_applied_object_missing_from_read",
+      "query": "A proposal applies successfully but the new graph object is missing from graph read output, and I need to understand the write, membership, and active-view filter path.",
+      "highly_relevant": [
+        "flow:flow.proposal_apply",
+        "claim:claim.memberships_attach_graph_subjects",
+        "component:component.active_graph_view"
+      ],
+      "relevant": [
+        "component:component.sqlite_repository",
+        "flow:flow.active_graph_view",
+        "claim:claim.active_view_filters_edges_to_active_endpoints",
+        "flow:flow.graph_read",
+        "component:component.scope_model"
+      ],
+      "weakly_relevant": [
+        "claim:claim.memory_commits_chain_with_parent",
+        "component:component.memory_commit_model"
+      ]
+    },
+    {
+      "id": "q33_parent_context_from_command_child",
+      "query": "Graph context finds a specific CLI command but misses the parent CLI surface, and I need to understand which hierarchy and dispatch relationships connect them.",
+      "highly_relevant": [
+        "component:component.cli_app",
+        "claim:claim.cli_app_contains_command_components",
+        "flow:flow.cli_command_dispatch"
+      ],
+      "relevant": [
+        "component:component.cli_graph_context_command",
+        "component:component.cli_graph_read_command",
+        "component:component.cli_proposal_commands",
+        "claim:claim.cli_is_thin_service_wrapper"
+      ],
+      "weakly_relevant": [
+        "component:component.knowledge_graph_service"
+      ]
+    },
+    {
+      "id": "q34_eval_state_leak_debugging",
+      "query": "Eval state is leaking between runs and I need to understand which eval runner, package entrypoint, environment variable, and SQLite database pieces control isolation.",
+      "highly_relevant": [
+        "flow:flow.local_database_isolation",
+        "claim:claim.package_eval_scripts_invoke_isolated_eval_runners",
+        "claim:claim.database_path_uses_engineering_context_home"
+      ],
+      "relevant": [
+        "component:component.bootstrap_eval_runner",
+        "component:component.search_eval_fixture",
+        "component:component.sqlite_database",
+        "component:component.package_scripts"
+      ],
+      "weakly_relevant": [
+        "component:component.sqlite_schema",
+        "flow:flow.sqlite_persistence"
       ]
     }
   ]

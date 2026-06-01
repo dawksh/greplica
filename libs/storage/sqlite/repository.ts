@@ -42,9 +42,12 @@ type MembershipRow = {
 
 type EdgeRow = Omit<Edge, "metadata"> & { metadata: string | null };
 
-export interface ClaimEmbeddingRecord {
+export type EmbeddingObjectType = "claim" | "component" | "flow";
+
+export interface GraphObjectEmbeddingRecord {
   repo_id: string;
-  claim_id: string;
+  object_type: EmbeddingObjectType;
+  object_id: string;
   provider: string;
   model: string;
   dimensions: number;
@@ -52,9 +55,10 @@ export interface ClaimEmbeddingRecord {
   created_at: string;
 }
 
-export interface InsertClaimEmbeddingInput {
+export interface InsertGraphObjectEmbeddingInput {
   repo_id: string;
-  claim_id: string;
+  object_type: EmbeddingObjectType;
+  object_id: string;
   provider: string;
   model: string;
   dimensions: number;
@@ -240,33 +244,33 @@ export class SqliteRepository {
     return undefined;
   }
 
-  listClaimEmbeddings(input: {
+  listGraphObjectEmbeddings(input: {
     repo_id: string;
     provider: string;
     model: string;
     dimensions: number;
-  }): ClaimEmbeddingRecord[] {
+  }): GraphObjectEmbeddingRecord[] {
     return this.db
       .prepare(
-        `SELECT repo_id, claim_id, provider, model, dimensions, embedding, created_at
-         FROM claim_embeddings
+        `SELECT repo_id, object_type, object_id, provider, model, dimensions, embedding, created_at
+         FROM graph_object_embeddings
          WHERE repo_id = @repo_id
            AND provider = @provider
            AND model = @model
            AND dimensions = @dimensions`,
       )
-      .all(input) as ClaimEmbeddingRecord[];
+      .all(input) as GraphObjectEmbeddingRecord[];
   }
 
-  insertClaimEmbeddings(inputs: InsertClaimEmbeddingInput[]): void {
+  insertGraphObjectEmbeddings(inputs: InsertGraphObjectEmbeddingInput[]): void {
     if (inputs.length === 0) return;
     const insert = this.db.prepare(
-      `INSERT OR IGNORE INTO claim_embeddings
-        (repo_id, claim_id, provider, model, dimensions, embedding, created_at)
+      `INSERT OR IGNORE INTO graph_object_embeddings
+        (repo_id, object_type, object_id, provider, model, dimensions, embedding, created_at)
        VALUES
-        (@repo_id, @claim_id, @provider, @model, @dimensions, @embedding, @created_at)`,
+        (@repo_id, @object_type, @object_id, @provider, @model, @dimensions, @embedding, @created_at)`,
     );
-    const write = this.db.transaction((records: InsertClaimEmbeddingInput[]) => {
+    const write = this.db.transaction((records: InsertGraphObjectEmbeddingInput[]) => {
       for (const record of records) insert.run({ ...record, created_at: now() });
     });
     write(inputs);

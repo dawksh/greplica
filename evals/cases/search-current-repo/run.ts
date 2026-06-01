@@ -296,8 +296,8 @@ function resultTypeOrder(type: "claim" | "component" | "flow"): number {
 }
 
 function validateRubric(rubric: SearchRubric): void {
-  if (rubric.queries.length !== 30) {
-    throw new Error(`Expected exactly 30 search queries, found ${rubric.queries.length}.`);
+  if (rubric.queries.length !== 34) {
+    throw new Error(`Expected exactly 34 search queries, found ${rubric.queries.length}.`);
   }
   for (const query of rubric.queries) {
     const ids = [...query.highly_relevant, ...query.relevant, ...query.weakly_relevant];

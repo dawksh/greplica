@@ -70,7 +70,7 @@ async function main(argv: string[]): Promise<void> {
     console.log(`Claims: ${result.created.claims}`);
     console.log(`Sources: ${result.created.sources}`);
     console.log(`Edges: ${result.created.edges}`);
-    console.log(`Embeddings checked: ${result.embedding_status.checked_claims}`);
+    console.log(`Embeddings checked: ${result.embedding_status.checked_objects}`);
     console.log(`Embeddings created: ${result.embedding_status.created}`);
     console.log(`Embeddings reused: ${result.embedding_status.reused}`);
     return;
