@@ -20,7 +20,7 @@ async function main(argv: string[]): Promise<void> {
   if (area === "init" && action === undefined) {
     const { repo, service } = createCommandContext();
     const result = service.initRepo(repo);
-    console.log(result.created ? "Initialized engineering context memory." : "Engineering context memory already initialized.");
+    console.log(result.created ? "Initialized Greplica memory." : "Greplica memory already initialized.");
     console.log(`Repo: ${repo.repo_name}`);
     console.log(`Remote: ${repo.remote_url}`);
     console.log(`Default branch: ${repo.default_branch}`);
@@ -49,7 +49,7 @@ async function main(argv: string[]): Promise<void> {
 
   if (area === "graph" && action === "context") {
     const query = rest.filter((arg) => arg !== "--json").join(" ").trim();
-    if (query.length === 0) throw new Error(`Usage: ec graph ${action} <query>`);
+    if (query.length === 0) throw new Error(`Usage: greplica graph ${action} <query>`);
     const { repo, service } = createCommandContext();
     const result = await service.contextGraph(repo, query);
     console.log(JSON.stringify(result, null, 2));
@@ -57,7 +57,7 @@ async function main(argv: string[]): Promise<void> {
   }
 
   if (area === "proposal" && action === "validate") {
-    const file = requireFile(rest[0], "Usage: ec proposal validate <file>");
+    const file = requireFile(rest[0], "Usage: greplica proposal validate <file>");
     const { repo, service } = createCommandContext();
     const proposal = readProposal(file);
     const result = service.validateProposal(repo, proposal);
@@ -72,7 +72,7 @@ async function main(argv: string[]): Promise<void> {
   }
 
   if (area === "proposal" && action === "apply") {
-    const file = requireFile(rest[0], "Usage: ec proposal apply <file>");
+    const file = requireFile(rest[0], "Usage: greplica proposal apply <file>");
     const { repo, service } = createCommandContext();
     const proposal = readProposal(file);
     const result = await service.applyProposal(repo, proposal);
@@ -113,7 +113,7 @@ async function runDoctor(args: string[]): Promise<void> {
   }
 
   let ready = true;
-  console.log("Engineering context doctor");
+  console.log("Greplica doctor");
   console.log(`Repo: ${context.repo.repo_name}`);
   console.log(`Repo root: ${context.repo.repo_root ?? ""}`);
   console.log(`Remote: ${context.repo.remote_url}`);
@@ -145,7 +145,7 @@ async function runDoctor(args: string[]): Promise<void> {
   if (source !== undefined && args.includes("--check-openai")) {
     try {
       const embedder = new OpenAIEmbedder(graphContextConfig.embedding);
-      await embedder.embed("engineering context doctor");
+      await embedder.embed("greplica doctor");
       console.log("OpenAI embeddings: ok");
     } catch (error: unknown) {
       ready = false;
@@ -188,7 +188,7 @@ function field(item: object, key: string): string {
 }
 
 function printHelp(): void {
-  const cli = basename(process.argv[1] ?? "ec");
+  const cli = basename(process.argv[1] ?? "greplica");
   console.log(`Usage:
   ${cli} doctor [--check-openai]
   ${cli} graph read

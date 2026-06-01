@@ -1,10 +1,10 @@
 ---
-name: ec-update-working-memory
-description: Update Engineering Context working memory from the current coding-agent session, recent code changes, and durable decisions. Use only when the user explicitly invokes ec-update-working-memory or asks to update working memory.
+name: greplica-update-working-memory
+description: Update Greplica working memory from the current coding-agent session, recent code changes, and durable decisions. Use only when the user explicitly invokes greplica-update-working-memory or asks to update working memory.
 disable-model-invocation: true
 ---
 
-# Update Engineering Context Working Memory
+# Update Greplica Working Memory
 
 Update working memory with durable information learned during this coding session.
 
@@ -12,11 +12,11 @@ Update working memory with durable information learned during this coding sessio
 
 Run from the target repository root or any subdirectory inside it.
 
-1. Run `ec doctor`.
-2. If `ec` is missing, tell the user to run the Engineering Context setup prompt from the README.
+1. Run `greplica doctor`.
+2. If `greplica` is missing, tell the user to run the Greplica setup prompt from the README.
 3. If `OPENAI_API_KEY` is missing, stop. Do not ask the user to paste the key into chat. Tell them to set it in their shell before launching the coding agent, or in repo-root `.env.local`.
 
-`ec` automatically prepares repo memory state; do not ask the user to run a separate initialization command.
+`greplica` automatically prepares repo memory state; do not ask the user to run a separate initialization command.
 
 ## Gather Evidence
 
@@ -26,7 +26,7 @@ Use the current conversation/session context plus code evidence. Read:
 - `git diff --stat`
 - focused `git diff` for changed areas
 - files touched by the session when needed to verify claims
-- existing relevant memory with `ec graph context "<task or changed area>"`
+- existing relevant memory with `greplica graph context "<task or changed area>"`
 
 Use the current session as context, but verify durable code facts against files or diffs when possible.
 
@@ -102,7 +102,7 @@ If you create a session source, connect source-backed claims with `evidenced_by`
 ## Quality Bar
 
 - Prefer a small update over broad memory churn.
-- Reuse existing components/flows when `ec graph context` finds them.
+- Reuse existing components/flows when `greplica graph context` finds them.
 - Create new components/flows only when the session introduced or clarified a durable area.
 - Use `code_verified` only for claims checked against code.
 - Use `source_verified` for claims grounded in the session or external artifacts.
@@ -110,7 +110,7 @@ If you create a session source, connect source-backed claims with `evidenced_by`
 
 ## Validate And Apply
 
-1. Run `ec proposal validate <proposal-file>`.
+1. Run `greplica proposal validate <proposal-file>`.
 2. Fix validation errors until valid.
-3. Run `ec proposal apply <proposal-file>`.
+3. Run `greplica proposal apply <proposal-file>`.
 4. Summarize the durable memory update and mention anything intentionally not stored.

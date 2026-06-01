@@ -5,7 +5,7 @@ import { dirname, join } from "node:path";
 import { migrate } from "./migrate.js";
 
 export function defaultDatabasePath(): string {
-  const home = process.env.ENGINEERING_CONTEXT_HOME ?? join(homedir(), ".engineering-context");
+  const home = process.env.GREPLICA_HOME ?? process.env.ENGINEERING_CONTEXT_HOME ?? join(homedir(), ".greplica");
   return join(home, "graph.db");
 }
 

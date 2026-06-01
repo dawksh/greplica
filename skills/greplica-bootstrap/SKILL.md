@@ -1,22 +1,22 @@
 ---
-name: ec-bootstrap
-description: Bootstrap Engineering Context memory for the current repository. Use only when the user explicitly invokes ec-bootstrap or asks to create initial engineering memory for a repo with the ec CLI.
+name: greplica-bootstrap
+description: Bootstrap Greplica memory for the current repository. Use only when the user explicitly invokes greplica-bootstrap or asks to create initial engineering memory for a repo with the greplica CLI.
 disable-model-invocation: true
 ---
 
-# Bootstrap Engineering Context Memory
+# Bootstrap Greplica Memory
 
-Create shallow, high-signal Engineering Context memory for the current repository.
+Create shallow, high-signal Greplica memory for the current repository.
 
 ## Preconditions
 
 Run from the target repository root or any subdirectory inside it.
 
-1. Run `ec doctor`.
-2. If `ec` is missing, tell the user to run the Engineering Context setup prompt from the README.
+1. Run `greplica doctor`.
+2. If `greplica` is missing, tell the user to run the Greplica setup prompt from the README.
 3. If `OPENAI_API_KEY` is missing, stop. Do not ask the user to paste the key into chat. Tell them to set it in their shell before launching the coding agent, or in repo-root `.env.local`.
 
-`ec` automatically prepares repo memory state; do not ask the user to run a separate initialization command.
+`greplica` automatically prepares repo memory state; do not ask the user to run a separate initialization command.
 
 ## Inspect The Repo Shallowly
 
@@ -29,7 +29,7 @@ Read enough to orient a future coding agent:
 - schema/type/model files that define durable concepts.
 - bundled skill files such as `skills/*/SKILL.md`, when present.
 - tests only when they clarify important behavior.
-- existing memory with `ec graph read`.
+- existing memory with `greplica graph read`.
 
 Do not perform a deep audit. Prefer major subsystems and human workflows over file-by-file or function-level memory.
 
@@ -107,7 +107,7 @@ Sources are external artifacts such as sessions, PRDs, docs, issues, PRs, or art
 
 ## Validate And Apply
 
-1. Run `ec proposal validate <proposal-file>`.
+1. Run `greplica proposal validate <proposal-file>`.
 2. Fix validation errors until valid.
-3. Run `ec proposal apply <proposal-file>`.
+3. Run `greplica proposal apply <proposal-file>`.
 4. Summarize what memory was created and mention the proposal file path if it still exists.
