@@ -1,18 +1,36 @@
+<div align="center">
+
 # Greplica
 
-Greplica (`greplica`) stores lightweight codebase memory for coding agents. The CLI provides small graph-memory primitives; agent workflows are provided as skills.
+### Long-term, searchable `AGENTS.md` for coding agents
 
-Greplica normally stores the current Git repository's real remote URL and target root path. If the current directory is not inside a Git repository, Greplica stores memory against that folder path with no remote URL.
+<p>
+  <a href="https://www.npmjs.com/package/greplica"><img alt="npm package" src="https://img.shields.io/npm/v/greplica?color=111111"></a>
+  <img alt="Agents" src="https://img.shields.io/badge/agents-Codex%20%7C%20Claude%20Code-2563eb">
+  <img alt="Storage" src="https://img.shields.io/badge/storage-local%20SQLite-475569">
+  <img alt="Embeddings" src="https://img.shields.io/badge/embeddings-local%20%7C%20OpenAI-16a34a">
+</p>
 
-## Requirements
+Keep `AGENTS.md` small. Put the rest of the agent's repo memory in Greplica.
 
-- Node.js and npm.
-- Build tools needed by native npm packages such as `better-sqlite3`.
-- An embedding provider for graph context search and proposal application. Local embeddings run in-process by default; OpenAI embeddings require `OPENAI_API_KEY` when configured.
+</div>
 
-## Agent Setup
+---
 
-Copy this prompt into the coding agent from the repository you want to use with Greplica:
+`AGENTS.md` works because coding agents need project context. But the useful context quickly grows past what belongs in a short, always-read instruction file: architecture decisions, workflow notes, repo-specific gotchas, evaluation results, implementation history, and follow-up work.
+
+Greplica keeps that deeper engineering context in local repo memory. Your agent can fetch the pieces it needs for the current task instead of rereading everything or rediscovering the codebase from scratch.
+
+| `AGENTS.md` | Greplica |
+| --- | --- |
+| Always read by the agent | Queried only when relevant |
+| Best for stable instructions | Best for deeper engineering context |
+| Should stay short and high-signal | Can hold architecture notes, decisions, evals, and gotchas |
+| Maintained manually | Maintained through bundled agent skills |
+
+## Agent Quick Start
+
+Most users should not install Greplica by hand. Paste this into your coding agent from inside the repo you want Greplica to remember:
 
 `````txt
 Install Greplica for this repo.
@@ -23,7 +41,7 @@ First install the CLI:
 npm install -g greplica
 ```
 
-Then run exactly one of these commands.
+Then run the installer for the agent I am using:
 
 Codex:
 ```bash
@@ -47,109 +65,109 @@ Then tell me how to use Greplica:
 - IMPORTANT: tell me to add the Greplica guidance block manually to AGENTS.md or CLAUDE.md if I want the agent to keep using Greplica automatically.
 `````
 
-## Using Greplica
+After that, the normal workflow is:
 
-After setup, invoke the skills by asking your coding agent to use them:
+| Step | Ask your agent | What happens |
+| --- | --- | --- |
+| 1 | `Use greplica-bootstrap for this repo.` | Creates the first repo memory map. |
+| 2 | Work normally | The agent can query `greplica graph context "<question>"` before broad exploration. |
+| 3 | `Use greplica-update-working-memory for this session.` | Durable decisions, constraints, changed flows, and follow-ups are saved. |
 
-```txt
-Use greplica-bootstrap for this repo.
-```
+<details>
+<summary>Manual install commands</summary>
 
-```txt
-Use greplica-update-working-memory for this session.
-```
-
-Run bootstrap once near the start of using Greplica in a repo. Run update working memory near the end of a coding session when the session contains durable decisions, changed flows, constraints, follow-up work, or useful implementation context.
-
-Do not run `greplica doctor` before normal Greplica commands. Use the intended command directly, such as `greplica graph context "<query>"`; if it fails, use the error message to decide whether `doctor` would help diagnose installation, target detection, or embedding-provider configuration.
-
-## Updating Greplica
-
-Update the published package with:
+Install the CLI:
 
 ```bash
-npm install -g greplica@latest
+npm install -g greplica
 ```
 
-Then rerun the platform install command so the latest bundled skills are copied into your coding-agent skill directory:
+Install Greplica for your coding agent.
+
+Codex:
 
 ```bash
 greplica install --platform codex --embedding local
 ```
 
-or:
+Claude Code:
 
 ```bash
 greplica install --platform claude --embedding local
 ```
 
-If the install output says to restart your coding agent, do that so the refreshed skills are picked up.
+</details>
 
-## Configuration
+That gives the next agent a better starting point: not just files on disk, but remembered decisions, constraints, flows, and follow-up work.
 
-`greplica` stores default CLI config at `~/.greplica/config.json`:
+---
 
-```json
-{
-  "version": 1,
-  "embedding": {
-    "provider": "local",
-    "model": "all-mpnet-base-v2",
-    "dimensions": 768,
-    "batchSize": 16
-  }
-}
-```
+## What Gets Stored?
 
-Print the config path, current JSON, allowed providers, and common examples:
+Greplica is for engineering context that is useful later but too detailed for an always-read prompt:
 
-```bash
-greplica config
-```
+- architecture and service boundaries
+- command and workflow behavior
+- repo-specific conventions and gotchas
+- decisions made during implementation
+- constraints, rejected alternatives, and future work
+- eval results and benchmark notes
+- code anchors that tell future agents where to inspect first
 
-Edit the printed JSON file directly to change the selected embedding provider, model, dimensions, or batch size. For example:
+The goal is not to replace source code or documentation. The goal is to give agents a durable map of what matters and where to look next.
 
-```json
-{
-  "version": 1,
-  "embedding": {
-    "provider": "openai",
-    "model": "text-embedding-3-small",
-    "dimensions": 1536,
-    "batchSize": 100
-  }
-}
-```
+## How It Works
 
-Allowed `embedding.provider` values are `local` and `openai`.
+Greplica is intentionally split into three layers:
 
-`greplica init --local` and `greplica init --openai` also update the same config file to provider defaults while initializing memory for the current repo or folder and checking that the selected embedding provider is ready.
+| Layer | Responsibility |
+| --- | --- |
+| CLI | Detects the current repo, stores memory locally, and exposes graph commands. |
+| Skills | Define agent workflows such as bootstrapping repo memory and updating working memory after a session. |
+| Retrieval | `greplica graph context "<query>"` returns relevant claims, components, and flows for the current task. |
 
-Local embeddings run in-process with a quantized Hugging Face Transformers model and cache model files under `~/.greplica/models`. The first `greplica init --local` or local embedding check downloads the configured model; subsequent runs reuse the cache.
+Memory is stored in SQLite under `~/.greplica/graph.db` by default. Local embeddings run in-process by default and cache model files under `~/.greplica/models`. OpenAI embeddings are also supported when configured.
 
-Useful local model choices:
+Graph context search blends multiple retrieval signals, including embeddings, BM25, exact matching, and graph relationships. The output is designed for coding agents: concise enough to fit into the task, but grounded enough to point at the right files and prior decisions.
 
-- `all-mpnet-base-v2`, 768 dimensions, default local model.
-- `all-MiniLM-L6-v2`, 384 dimensions, smaller local option.
+## Evals And Benchmarks
 
-`greplica` looks for `OPENAI_API_KEY` in this order:
+Greplica includes evals for the workflows that matter most:
 
-1. the process environment
-2. `<target-root>/.env.local`
-3. `<target-root>/.env`
+- bootstrapping repo memory
+- graph context retrieval
+- working-memory updates from real sessions
+- proposal validation and apply behavior
 
-The key is never printed by `greplica doctor`.
+The search eval scores `greplica graph context` retrieval with `Precision@10`, `Recall@10`, `MRR@10`, `nDCG@10`, and `GradeRecall@10`.
 
-Memory is stored in `~/.greplica/graph.db` by default. Set `GREPLICA_HOME` only for tests or advanced isolated runs.
+| Eval | Latest local result |
+| --- | --- |
+| `npm run eval:search-current` | Passed, `80.59 / 100` |
+| `P@10` | `0.550` |
+| `R@10` | `0.782` |
+| `MRR@10` | `0.985` |
+| `nDCG@10` | `0.802` |
+| `GradeRecall@10` | `0.828` |
+
+Broader context-retrieval benchmarking, including SWE-Context benchmark work, is ongoing and showing promising early results. We will publish those numbers when the harness and methodology are stable enough to compare fairly.
+
+## Roadmap
+
+- Codex and Claude Code plugins so Greplica can be installed and used as a first-class agent integration.
+- Review UX for memory updates before the agent applies them.
+- SWE-Context benchmark coverage and sharper retrieval evals for real coding tasks.
 
 ## Commands
 
 ```bash
+greplica install --platform codex|claude --embedding local|openai
 greplica init [--local|--openai]
 greplica config
 greplica doctor [--check-embeddings]
 greplica graph read
 greplica graph context "<query>" [--json|--debug]
+greplica graph export <dir>
 greplica proposal validate <proposal.json>
 greplica proposal apply <proposal.json>
 ```
@@ -159,7 +177,3 @@ greplica proposal apply <proposal.json>
 `greplica` automatically prepares memory state when commands run, so users should not need a separate init step.
 
 `greplica doctor` is for install verification and diagnosing failures, not a required preflight before every Greplica command.
-
-## Alpha Status
-
-Greplica is ready for small-team dogfooding. The bootstrap flow is the most stable path. The update-working-memory flow validates and applies proposals, but memory quality still needs human review, especially for nuanced session rationale, future work, and superseding older claims.
