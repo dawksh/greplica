@@ -116,6 +116,7 @@ async function main(argv: string[]): Promise<void> {
     const files = buildGraphFolderExport(service.readGraph(repo));
     writeGraphFolderExport(outputDir, files);
     console.log(`Exported current graph view to ${outputDir}`);
+    console.log(`HTML: ${join(outputDir, "index.html")}`);
     console.log(`Files: ${files.length}`);
     return;
   }
